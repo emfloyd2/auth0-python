@@ -48,8 +48,28 @@ class Passwordless(AuthenticationBase):
             headers={'Content-Type': 'application/json'}
         )
 
-    def sms(self, client_id, phone_number):
-        """Start flow sending a SMS message.
+    def sms(self, client_id, phone, send='link', auth_params={}):
+        """Start flow sending an email.
+
+        Given the user email address, it will send an email with:
+
+          - A link (default, send:"link"). You can then authenticate with
+            this user opening the link and he will be automatically logged in
+            to the application. Optionally, you can append/override
+            parameters to the link (like scope, redirect_uri, protocol,
+            response_type, etc.) using auth_params dict.
+
+          - A verification code (send:"code"). You can then authenticate with
+            this user using email as username and code as password.
+
+        Args:
+            client_id (str): Client Id of the application.
+
+            email (str): Email address.
+
+            send (str, optional): Can be: 'link' or 'code'. Defaults to 'link'.
+
+            auth_params (dict, optional): Parameters to append or override.
         """
 
         return self.post(
@@ -57,7 +77,9 @@ class Passwordless(AuthenticationBase):
             data={
                 'client_id': client_id,
                 'connection': 'sms',
-                'phone_number': phone_number,
+                'phone_number': phone,
+                'send': send,
+                'authParams': auth_params
             },
             headers={'Content-Type': 'application/json'}
         )
